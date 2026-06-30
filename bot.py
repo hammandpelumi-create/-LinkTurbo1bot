@@ -10,7 +10,14 @@ import logging
 import re
 import requests
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+from telegram.ext import (
+    Application, 
+    CommandHandler, 
+    MessageHandler, 
+    CallbackQueryHandler,
+    filters, 
+    ContextTypes
+)
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -223,6 +230,13 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
 
+# ============ ERROR HANDLER ============
+
+async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Handle errors"""
+    logger.error(f"Update {update} caused error {context.error}")
+
+
 # ============ MAIN ============
 
 def main():
@@ -245,6 +259,9 @@ def main():
         
         # Add callback query handler
         application.add_handler(CallbackQueryHandler(handle_callback))
+        
+        # Add error handler
+        application.add_error_handler(error_handler)
         
         # Start polling
         logger.info("✅ Bot is running and listening for messages...")
